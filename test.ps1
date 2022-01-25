@@ -1,4 +1,3 @@
-Register-AzResourceProvider -ProviderNamespace "Microsoft.RecoveryServices" -ErrorAction SilentlyContinue
 New-AzRecoveryServicesVault -ResourceGroupName $(ResourceGroupName) -Name "azBackupVault" -Location $(location) -ErrorAction SilentlyContinue
 Get-AzRecoveryServicesVault -Name "azBackupVault" | Set-AzRecoveryServicesVaultContext -ErrorAction SilentlyContinue
 Get-AzRecoveryServicesVault -Name "azBackupVault" | Set-AzRecoveryServicesBackupProperty -BackupStorageRedundancy LocallyRedundant/GeoRedundant -ErrorAction SilentlyContinue
