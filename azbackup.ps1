@@ -1,13 +1,13 @@
 #Variables
 $RG = 'TF' #Resource Group Name
 $Location = 'eastus'
-$RSVault = 'Vault4'
+$RSVault = 'Vault1'
 $Redundancy = 'LocallyRedundant' #Storage Redundancy settings - LocallyRedundant/GeoRedundant
 $Time = '5:00' #Preferred Time to start Backup
 $Duration = '365' #Duration of Backup
-$PolicyName = 'NewPolicy'
-$VMName = 'test2'
-$BackupName = 'test-Backup'
+$PolicyName = 'BackupPolicy'
+$VMName = 'azbackuptest'
+$BackupName = 'azbackuptest-backup'
 $WorkLoadType = "AzureVM"
 
 #PowerShell Code
@@ -36,17 +36,17 @@ Write-Host "Checking for a valid Backup Policy"
 Get-AzRecoveryServicesBackupProtectionPolicy -Name $PolicyName -ErrorVariable notPresent -ErrorAction SilentlyContinue
 if ($notPresent)
     {
-    $SchPol = Get-AzRecoveryServicesBackupSchedulePolicyObject -WorkloadType $WorkLoadType 
-    $SchPol.ScheduleRunTimes.Clear()
+    $SchdulePol = Get-AzRecoveryServicesBackupSchedulePolicyObject -WorkloadType $WorkLoadType 
+    $SchdulePol.ScheduleRunTimes.Clear()
     [DATETIME]$Time = $Time
     $Time=$Time.ToUniversalTime()
-    $SchPol.ScheduleRunTimes.Add($Time)
-    $RetPol = Get-AzRecoveryServicesBackupRetentionPolicyObject -WorkloadType $WorkLoadType 
-    $RetPol.DailySchedule.DurationCountInDays = $Duration
-	New-AzRecoveryServicesBackupProtectionPolicy -Name $PolicyName -WorkloadType $WorkLoadType -RetentionPolicy $RetPol -SchedulePolicy $SchPol
+    $SchdulePol.ScheduleRunTimes.Add($Time)
+    $RetentionPol = Get-AzRecoveryServicesBackupRetentionPolicyObject -WorkloadType $WorkLoadType 
+    $RetentionPol.DailySchedule.DurationCountInDays = $Duration
+	New-AzRecoveryServicesBackupProtectionPolicy -Name $PolicyName -WorkloadType $WorkLoadType -RetentionPolicy $RetentionPol -SchedulePolicy $SchdulePol
     }
 
-Write-Host "Applying the BackupProtection policy to the VM"
+Write-Host "Applying the Policy to the Virtual Machine"
 $policy = Get-AzRecoveryServicesBackupProtectionPolicy -Name $PolicyName
 try {
 	Enable-AzRecoveryServicesBackupProtection -ResourceGroupName $RG -Name $VMName -Policy $policy -ErrorAction SilentlyContinue
@@ -57,7 +57,7 @@ catch {
 }
 $backupcontainer = Get-AzRecoveryServicesBackupContainer -ContainerType  $WorkLoadType -FriendlyName $VMName
 $item = Get-AzRecoveryServicesBackupItem -container $backupcontainer -WorkloadType $WorkLoadType
-Write-Host "Starting the Backing up of VM in $RSVault"
+Write-Host "Starting the Back up of Virtual Machine in $RSVault"
 try {
 	Backup-AzRecoveryServicesBackupItem -Item $item -ErrorAction SilentlyContinue
 	}
