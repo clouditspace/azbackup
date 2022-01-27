@@ -1,0 +1,11 @@
+# Pipeline to create azure VM backup using PowerShell code
+trigger:
+- main
+pool:
+  vmImage: ubuntu-latest
+steps:
+- task: AzurePowerShell@5
+  inputs:
+    ScriptPath: './azbackup.ps1'
+    errorActionPreference: 'continue'
+    azurePowerShellVersion: 'LatestVersion'
