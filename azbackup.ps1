@@ -1,3 +1,5 @@
+#Author - Manu Philip
+#Setup Virtual machine Backup in Azure DevOps pipeline using PowerShell
 #Variables
 $RG = 'TF' #Resource Group Name
 $Location = 'eastus'
